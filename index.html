@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>香港麻雀番數記分板</title>
+  
+  <style>
+    /* 基礎整體版面設定 */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: #f2f5f8;
+      color: #333333;
+      margin: 0;
+      padding: 24px 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+
+    /* 置中的主卡片容器 */
+    .calculator-card {
+      background-color: #ffffff;
+      max-width: 420px;
+      width: 100%;
+      padding: 28px 24px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      border: 1px solid #e2e8f0;
+    }
+
+    /* 標題與簡介 */
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      text-align: center;
+      margin-top: 0;
+      margin-bottom: 8px;
+      color: #1e3a8a;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      text-align: center;
+      color: #64748b;
+      margin-bottom: 24px;
+    }
+
+    /* 輸入區塊欄位 */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    /* 標籤文字 */
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #334155;
+    }
+
+    /* 數字輸入框 */
+    input[type="number"] {
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 16px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      box-sizing: border-box;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="number"]:focus {
+      border-color: #2563eb;
+    }
+
+    /* 快捷番數按鈕區塊 */
+    .quick-fan-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .quick-label {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 6px;
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+
+    .btn-quick {
+      flex: 1;
+      min-width: 52px;
+      padding: 6px 4px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #1e3a8a;
+      background-color: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.15s, border-color 0.15s;
+    }
+
+    .btn-quick:hover {
+      background-color: #dbeafe;
+      border-color: #93c5fd;
+    }
+
+    /* 番數對照表卡片區塊 */
+    .reference-table-box {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px dashed #cbd5e1;
+    }
+
+    .reference-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .reference-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .ref-item {
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 6px;
+      text-align: center;
+      font-size: 12px;
+      color: #334155;
+    }
+
+    .ref-item strong {
+      color: #047857;
+    }
+
+    /* 按鈕橫排容器 */
+    .button-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      margin-bottom: 20px;
+    }
+
+    /* 通用按鈕樣式 */
+    button {
+      flex: 1;
+      padding: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.15s, transform 0.05s;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    /* 主要計算按鈕 */
+    .btn-calculate {
+      background-color: #059669;
+      color: #ffffff;
+    }
+
+    .btn-calculate:hover {
+      background-color: #047857;
+    }
+
+    /* 重新輸入按鈕：深藍色粗外框、淺紫色底色、橙黃色文字 */
+    .btn-reset {
+      background-color: #f3e8ff;
+      border: 3px solid #1e3a8a;
+      color: #d97706;
+      font-weight: 700;
+    }
+
+    .btn-reset:hover {
+      background-color: #e9d5ff;
+      color: #b45309;
+    }
+
+    /* 結果顯示外框 */
+    .result-box {
+      background-color: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 結果文字 */
+    .result-text {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.5;
+      margin: 0;
+      color: #475569;
+    }
+
+    /* 達標時的結果文字樣式 */
+    .status-success {
+      color: #047857;
+    }
+
+    /* 未達標或警告時的文字樣式 */
+    .status-warning {
+      color: #b91c1c;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 主卡片 -->
+  <div class="calculator-card">
+    <h1>🀄 香港麻雀番數記分板</h1>
+    <div class="subtitle">輸入番數，快速計算入糊資格與底分</div>
+
+    <!-- 輸入欄位 1：本局番數 -->
+    <div class="form-group">
+      <label for="fanInput">本局番數：</label>
+      <input type="number" id="fanInput" placeholder="請輸入整數番數，例如 3" min="0" step="1">
+      
+      <div class="quick-label">⚡ 常用番數快捷鍵：</div>
+      <div class="quick-fan-container">
+        <button type="button" class="btn-quick" onclick="setQuickFan(3)">3 番</button>
+        <button type="button" class="btn-quick" onclick="setQuickFan(4)">4 番</button>
+        <button type="button" class="btn-quick" onclick="setQuickFan(5)">5 番</button>
+        <button type="button" class="btn-quick" onclick="setQuickFan(6)">6 番</button>
+        <button type="button" class="btn-quick" onclick="setQuickFan(8)">8 番</button>
+      </div>
+    </div>
+
+    <!-- 輸入欄位 2：最低入糊番數（起糊） -->
+    <div class="form-group">
+      <label for="minFanInput">最低入糊番數（起糊）：</label>
+      <input type="number" id="minFanInput" value="3" min="0" step="1">
+    </div>
+
+    <!-- 輸入欄位 3：封頂番數 -->
+    <div class="form-group">
+      <label for="maxFanInput">封頂番數（滿糊 / 辣辣上封頂）：</label>
+      <input type="number" id="maxFanInput" value="8" min="1" step="1">
+    </div>
+
+    <!-- 操作按鈕 -->
+    <div class="button-group">
+      <button type="button" class="btn-calculate" id="calcBtn">計算分數</button>
+      <button type="button" class="btn-reset" id="resetBtn">重新輸入</button>
+    </div>
+
+    <!-- 結果顯示區域 -->
+    <div class="result-box">
+      <p class="result-text" id="resultText">請輸入番數後點擊「計算分數」</p>
+    </div>
+
+    <!-- 番數對照表 -->
+    <div class="reference-table-box">
+      <div class="reference-title">📋 常見番數對照表（以 2ⁿ 計算）</div>
+      <div class="reference-grid">
+        <div class="ref-item">3 番 = <strong>8</strong> 分</div>
+        <div class="ref-item">4 番 = <strong>16</strong> 分</div>
+        <div class="ref-item">5 番 = <strong>32</strong> 分</div>
+        <div class="ref-item">6 番 = <strong>64</strong> 分</div>
+        <div class="ref-item">7 番 = <strong>128</strong> 分</div>
+        <div class="ref-item">8 番 = <strong>256</strong> 分</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* 
+      初學者說明：
+      我們先透過 document.getElementById 抓取網頁中需要用到的按鈕與輸入框
+    */
+    const fanInput = document.getElementById('fanInput');
+    const minFanInput = document.getElementById('minFanInput');
+    const maxFanInput = document.getElementById('maxFanInput');
+    const calcBtn = document.getElementById('calcBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const resultText = document.getElementById('resultText');
+
+    // 計算分數的主函式
+    function calculateMahjongScore() {
+      // 1. 取得輸入值並轉成整數 (Integer)
+      const fanValue = parseInt(fanInput.value, 10);
+      const minFan = parseInt(minFanInput.value, 10);
+      const maxFan = parseInt(maxFanInput.value, 10);
+
+      // 2. 檢查使用者是否有輸入有效的數字
+      if (isNaN(fanValue)) {
+        resultText.textContent = '請先在「本局番數」輸入有效數字！';
+        resultText.className = 'result-text status-warning';
+        return;
+      }
+
+      if (isNaN(minFan) || isNaN(maxFan)) {
+        resultText.textContent = '請填寫正確的起糊與封頂番數！';
+        resultText.className = 'result-text status-warning';
+        return;
+      }
+
+      if (fanValue < 0) {
+        resultText.textContent = '番數不能為負數！';
+        resultText.className = 'result-text status-warning';
+        return;
+      }
+
+      // 3. 判斷是否達到「最低起糊番數」
+      if (fanValue < minFan) {
+        resultText.textContent = `未達入糊標準（最低需要 ${minFan} 番）`;
+        resultText.className = 'result-text status-warning';
+        return;
+      }
+
+      // 4. 計算有效番數（如果超過封頂番數，則按封頂番數計算）
+      let effectiveFan = fanValue;
+      let isCapped = false;
+
+      if (fanValue > maxFan) {
+        effectiveFan = maxFan;
+        isCapped = true;
+      }
+
+      // 5. 按「2 的番數次方」計算基本分數 (例如 2 ** 3 = 8)
+      const baseScore = Math.pow(2, effectiveFan);
+
+      // 6. 組合要顯示的結果文字
+      if (isCapped) {
+        resultText.textContent = `本局番數：${fanValue}番（已達封頂 ${maxFan} 番），計算分數：${baseScore}`;
+      } else {
+        resultText.textContent = `本局番數：${effectiveFan}番，計算分數：${baseScore}`;
+      }
+      
+      // 切換為綠色成功文字樣式
+      resultText.className = 'result-text status-success';
+    }
+
+    // 快捷鍵函式：點擊快捷按鈕後，自動填入指定番數並直接計算
+    function setQuickFan(fanNumber) {
+      fanInput.value = fanNumber;
+      calculateMahjongScore();
+    }
+
+    // 「重新輸入」函式：將欄位清空或還原為預設值
+    function resetAll() {
+      fanInput.value = '';        // 清空番數輸入框
+      minFanInput.value = '3';    // 還原預設 3 番起糊
+      maxFanInput.value = '8';    // 還原預設 8 番封頂
+      resultText.textContent = '請輸入番數後點擊「計算分數」';
+      resultText.className = 'result-text';
+      fanInput.focus();           // 讓游標自動跳回番數輸入框，方便再次輸入
+    }
+
+    // 綁定按鈕點擊事件 (點擊按鈕時執行對應的函式)
+    calcBtn.addEventListener('click', calculateMahjongScore);
+    resetBtn.addEventListener('click', resetAll);
+
+    // 貼心小功能：在輸入框按下 Enter 鍵也能立刻計算
+    fanInput.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter') {
+        calculateMahjongScore();
+      }
+    });
+  </script>
+</body>
+</html>
